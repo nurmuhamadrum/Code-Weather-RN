@@ -57,14 +57,14 @@ Wait till the application is installed and run into your device. Now, you can ex
 
 ## Screenshots
 
-<!-- <div style={{ display: 'flex' }}> -->
+<div style={{ display: 'flex' }}>
 
-  <img src="./docs/screenshoots/screenshots-1.png" width="30%"  />
-  <img src="./docs/screenshoots/screenshots-2.png" width="30%"  />
-  <img src="./docs/screenshoots/screenshots-3.png" width="30%"  />
-  <img src="./docs/screenshoots/screenshots-4.png" width="30%"  />
+  <img src="./docs/screenshots/screenshots-1.png" width="30%"  />
+  <img src="./docs/screenshots/screenshots-2.png" width="30%"  />
+  <img src="./docs/screenshots/screenshots-3.png" width="30%"  />
+  <img src="./docs/screenshots/screenshots-4.png" width="30%"  />
 
-<!-- </div> -->
+</div>
 
 
 ## Built With
