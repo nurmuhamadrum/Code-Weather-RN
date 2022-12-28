@@ -30,7 +30,7 @@ Make sure all of these are properly installed in your system.
 First, clone this repository into your system.
 
 ```
-git clone https://github.com/nurmuhamadrum/weather-app.git
+git clone https://github.com/nurmuhamadrum/Code-Weather-RN.git
 ```
 
 Then, install all the packages that described in `package.json`.
