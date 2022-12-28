@@ -46,7 +46,7 @@ function HomeScreen() {
   }
 
   /** Render Clock Weather Item */
-  const renderItemClock = () => (
+  const renderItemClock = ({ item }) => (
     <View style={styles.clockContent}>
       {isLoading ? (
         <Placeholder Animation={Fade} height={60}>
@@ -54,16 +54,16 @@ function HomeScreen() {
         </Placeholder>
       ) : (
         <>
-          <Text style={styles.titleClock}>21:00</Text>
-          <Image source={iconCloud} style={styles.iconWeatherClock} />
-          <Text style={styles.subtitleClock}>26`</Text>
+          <Text style={styles.titleClock}>{item?.dt_txt.slice(-8).substring(0, item?.dt_txt.slice(-8).length - 3)}</Text>
+          <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconWeatherClock} />
+          <Text style={styles.subtitleClock}>{temperatureConverter(item?.main?.temp)}</Text>
         </>
       )}
     </View>
   );
 
   /** Render Day Weather Item */
-  const renderItemDay = (item) => (
+  const renderItemDay = ({ item }) => (
     <View>
       {isLoading ? (
         <Placeholder Animation={Fade} height={20} marginTop={18}>
@@ -71,12 +71,12 @@ function HomeScreen() {
         </Placeholder>
       ) : (
         <>
-          {item.index !== 0 && <View style={styles.divider} />}
+          <View style={styles.divider} />
           <TouchableOpacity style={styles.buttonDay}>
-            <Text style={styles.titleDay}>Tue Dec 27</Text>
+            <Text style={styles.titleDay}>{item?.dt_txt.substring(0, item?.dt_txt.length - 9)}</Text>
             <View style={styles.contentButtonRight}>
-              <Text style={styles.titleDay}>28 / 25`C</Text>
-              <Image source={iconRainy} style={styles.iconDay} />
+              <Text style={styles.titleDay}>{`${temperatureConverter(item?.main?.temp_min)} / ${temperatureConverter(item?.main?.temp_max)}`}</Text>
+              <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconDay} />
               <Image source={iconChevron} style={styles.iconChevron} />
             </View>
           </TouchableOpacity>
@@ -90,7 +90,6 @@ function HomeScreen() {
       <StatusBar barStyle="light-content" backgroundColor={'#100F0F'} />
       <SafeAreaView style={styles.contentContainer}>
         <ScrollView>
-          {console.log('==== foreCast ===', foreCastList)}
 
           {/** Header Section */}
           <View style={styles.headerContainer}>
