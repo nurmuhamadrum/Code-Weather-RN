@@ -6,7 +6,8 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -15,21 +16,26 @@ import {
   PlaceholderLine,
   Fade
 } from "rn-placeholder";
+import { useNavigation } from '@react-navigation/native';
+import { LineChart } from "react-native-chart-kit";
 
 import { iconSearch, iconSetting, iconCloud, iconRainy, iconSun, iconChevron } from '../../Assets';
 import { styles } from './style';
 import { getForeCast, temperatureConverter } from '../../Functions';
+import { fontColorGray, bgColorPrimary } from '../../Helpers/Color';
 
 function HomeScreen() {
   const [foreCast, setForeCast] = useState([]);
   const [foreCastList, setForeCastList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [foreCastIndex, setSetForeCastIndex] = useState(false)
+  const navigation = useNavigation();
 
   useEffect(() => {
     getForeCastWeather()
   }, [])
 
+  /** Handle Get Forecast Weather */
   const getForeCastWeather = async () => {
     try {
       const result = await getForeCast();
@@ -55,7 +61,7 @@ function HomeScreen() {
       ) : (
         <>
           <Text style={styles.titleClock}>{item?.dt_txt.slice(-8).substring(0, item?.dt_txt.slice(-8).length - 3)}</Text>
-          <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconWeatherClock} />
+          <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud : iconSun} style={styles.iconWeatherClock} />
           <Text style={styles.subtitleClock}>{temperatureConverter(item?.main?.temp)}</Text>
         </>
       )}
@@ -76,7 +82,7 @@ function HomeScreen() {
             <Text style={styles.titleDay}>{item?.dt_txt.substring(0, item?.dt_txt.length - 9)}</Text>
             <View style={styles.contentButtonRight}>
               <Text style={styles.titleDay}>{`${temperatureConverter(item?.main?.temp_min)} / ${temperatureConverter(item?.main?.temp_max)}`}</Text>
-              <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconDay} />
+              <Image source={item?.weather?.[0]?.main == 'Rain' ? iconRainy : item?.weather?.[0]?.main == 'Clouds' ? iconCloud : iconSun} style={styles.iconDay} />
               <Image source={iconChevron} style={styles.iconChevron} />
             </View>
           </TouchableOpacity>
@@ -95,7 +101,9 @@ function HomeScreen() {
           <View style={styles.headerContainer}>
             <Image source={iconSearch} style={styles.iconSearch} />
             {isLoading ? <PlaceholderLine Animation={Fade} width={60} style={styles.skeletonHeader} /> : <Text style={styles.title}>{foreCast?.city?.name}</Text>}
-            <Image source={iconSetting} style={styles.iconSearch} />
+            <TouchableOpacity onPress={() => navigation.navigate('Detail')}>
+              <Image source={iconSetting} style={styles.iconSearch} />
+            </TouchableOpacity>
           </View>
 
           {/** Content Container */}
@@ -119,7 +127,7 @@ function HomeScreen() {
               ) : (
                 <>
                   <View style={styles.titleWeatherContainer}>
-                    <Image source={foreCastIndex?.weather?.[0]?.main == 'Rain' ? iconRainy : foreCastIndex?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconWeather} />
+                    <Image source={foreCastIndex?.weather?.[0]?.main == 'Rain' ? iconRainy : foreCastIndex?.weather?.[0]?.main == 'Clouds' ? iconCloud : iconSun} style={styles.iconWeather} />
                     <View>
                       <Text style={styles.titleWeather}>{foreCastIndex?.weather?.[0]?.description}</Text>
                       <Text style={styles.subtitleWeather}>{foreCastIndex?.weather?.[0]?.main}</Text>
@@ -131,6 +139,51 @@ function HomeScreen() {
                 </>
               )}
             </View>
+
+            {/** Weather Chart Section */}
+            {!isLoading && (
+              <View>
+                <LineChart
+                  data={{
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                    datasets: [
+                      {
+                        data: [
+                          foreCastList?.[0]?.main?.humidity,
+                          foreCastList?.[1]?.main?.humidity,
+                          foreCastList?.[2]?.main?.humidity,
+                          foreCastList?.[3]?.main?.humidity,
+                          foreCastList?.[4]?.main?.humidity,
+                          foreCastList?.[5]?.main?.humidity,
+                        ]
+                      }
+                    ]
+                  }}
+                  width={Dimensions.get("window").width * 0.94}
+                  height={220}
+                  yAxisSuffix="%"
+                  yAxisInterval={1}
+                  chartConfig={{
+                    backgroundColor: bgColorPrimary,
+                    backgroundGradientFrom: bgColorPrimary,
+                    backgroundGradientTo: fontColorGray,
+                    decimalPlaces: 2,
+                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                    style: {
+                      borderRadius: 16
+                    },
+                    propsForDots: {
+                      r: "6",
+                      strokeWidth: "2",
+                      stroke: "#ffa726"
+                    }
+                  }}
+                  bezier
+                  style={{ marginVertical: 8, borderRadius: 16 }}
+                />
+              </View>
+            )}
 
             {/** Weather Subtitle Section */}
             <View style={styles.boxContainerSubtitle}>
