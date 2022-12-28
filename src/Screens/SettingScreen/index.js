@@ -6,7 +6,7 @@ import {
 import React from 'react';
 import { bgColorPrimary, fontColor } from '../../Helpers/Color';
 
-export default function DetailScreen() {
+export default function SettingScreen() {
   return (
     <View style={styles.detailContainer}>
       <Text style={styles.titleDetail}>Detail Screen</Text>

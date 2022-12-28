@@ -86,7 +86,7 @@ function HomeScreen() {
           <View style={styles.headerContainer}>
             <Image source={iconSearch} style={styles.iconSearch} />
             {isLoading ? <PlaceholderLine Animation={Fade} width={60} style={styles.skeletonHeader} /> : <Text style={styles.title}>{foreCast?.city?.name}</Text>}
-            <TouchableOpacity onPress={() => navigation.navigate('Detail')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
               <Image source={iconSetting} style={styles.iconSearch} />
             </TouchableOpacity>
           </View>
