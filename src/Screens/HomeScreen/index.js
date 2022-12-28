@@ -9,7 +9,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Placeholder,
   PlaceholderMedia,
@@ -18,38 +18,23 @@ import {
 } from "rn-placeholder";
 import { useNavigation } from '@react-navigation/native';
 import { LineChart } from "react-native-chart-kit";
+import { useGetPostsQuery } from '../../Redux/forecast';
 
 import { iconSearch, iconSetting, iconCloud, iconRainy, iconSun, iconChevron } from '../../Assets';
 import { styles } from './style';
-import { getForeCast, temperatureConverter } from '../../Functions';
+import { temperatureConverter } from '../../Functions';
 import { fontColorGray, bgColorPrimary } from '../../Helpers/Color';
 
 function HomeScreen() {
-  const [foreCast, setForeCast] = useState([]);
-  const [foreCastList, setForeCastList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [foreCastIndex, setSetForeCastIndex] = useState(false)
   const navigation = useNavigation();
+  const {
+    data: forecast,
+    isLoading,
+  } = useGetPostsQuery();
 
-  useEffect(() => {
-    getForeCastWeather()
-  }, [])
-
-  /** Handle Get Forecast Weather */
-  const getForeCastWeather = async () => {
-    try {
-      const result = await getForeCast();
-
-      if (result) {
-        setForeCast(result);
-        setForeCastList(result?.list);
-        setSetForeCastIndex(result?.list[0]);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.log('error@getForeCastWeather', error);
-    }
-  }
+  const foreCast = forecast;
+  const foreCastList = forecast?.list;
+  const foreCastIndex = forecast?.list[0];
 
   /** Render Clock Weather Item */
   const renderItemClock = ({ item }) => (
@@ -141,7 +126,7 @@ function HomeScreen() {
             </View>
 
             {/** Weather Chart Section */}
-            {!isLoading && (
+            {foreCast != undefined && (
               <View>
                 <LineChart
                   data={{
