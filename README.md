@@ -59,11 +59,11 @@ Wait till the application is installed and run into your device. Now, you can ex
 
 <div style={{ display: 'flex' }}>
 
-  <img src="/docs/screenshoots/screenshots-1.png" width="30%"  />
-  <img src="/docs/screenshoots/screenshots-2.png" width="30%"  />
-  <img src="/docs/screenshoots/screenshots-3.png" width="30%"  />
-  <img src="/docs/screenshoots/screenshots-4.png" width="30%"  />
-  
+  <img src="./docs/screenshoots/screenshots-1.png" width="30%"  />
+  <img src="./docs/screenshoots/screenshots-2.png" width="30%"  />
+  <img src="./docs/screenshoots/screenshots-3.png" width="30%"  />
+  <img src="./docs/screenshoots/screenshots-4.png" width="30%"  />
+
 </div>
 
 
