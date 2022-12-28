@@ -1,6 +1,6 @@
 # React Native Weather App
 
-This application has a get current weather feature.
+This application is a clone of the Open Weather application where this application is built using React Native and One Call Api as the API
 
 ## Table of Contents
 
