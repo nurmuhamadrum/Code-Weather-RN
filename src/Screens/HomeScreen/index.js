@@ -8,22 +8,94 @@ import {
   TouchableOpacity,
   ScrollView
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  Placeholder,
+  PlaceholderMedia,
+  PlaceholderLine,
+  Fade
+} from "rn-placeholder";
 
-import { iconSearch, iconSetting, iconCloud, iconRainy, iconChevron } from '../../Assets';
+import { iconSearch, iconSetting, iconCloud, iconRainy, iconSun, iconChevron } from '../../Assets';
 import { styles } from './style';
+import { getForeCast, temperatureConverter } from '../../Functions';
 
 function HomeScreen() {
+  const [foreCast, setForeCast] = useState([]);
+  const [foreCastList, setForeCastList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [foreCastIndex, setSetForeCastIndex] = useState(false)
+
+  useEffect(() => {
+    getForeCastWeather()
+  }, [])
+
+  const getForeCastWeather = async () => {
+    try {
+      const result = await getForeCast();
+
+      if (result) {
+        setForeCast(result);
+        setForeCastList(result?.list);
+        setSetForeCastIndex(result?.list[0]);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log('error@getForeCastWeather', error);
+    }
+  }
+
+  /** Render Clock Weather Item */
+  const renderItemClock = () => (
+    <View style={styles.clockContent}>
+      {isLoading ? (
+        <Placeholder Animation={Fade} height={60}>
+          <PlaceholderLine width={80} height={60} style={{ borderRadius: 6 }} />
+        </Placeholder>
+      ) : (
+        <>
+          <Text style={styles.titleClock}>21:00</Text>
+          <Image source={iconCloud} style={styles.iconWeatherClock} />
+          <Text style={styles.subtitleClock}>26`</Text>
+        </>
+      )}
+    </View>
+  );
+
+  /** Render Day Weather Item */
+  const renderItemDay = (item) => (
+    <View>
+      {isLoading ? (
+        <Placeholder Animation={Fade} height={20} marginTop={18}>
+          <PlaceholderLine height={30} style={{ borderRadius: 6 }} />
+        </Placeholder>
+      ) : (
+        <>
+          {item.index !== 0 && <View style={styles.divider} />}
+          <TouchableOpacity style={styles.buttonDay}>
+            <Text style={styles.titleDay}>Tue Dec 27</Text>
+            <View style={styles.contentButtonRight}>
+              <Text style={styles.titleDay}>28 / 25`C</Text>
+              <Image source={iconRainy} style={styles.iconDay} />
+              <Image source={iconChevron} style={styles.iconChevron} />
+            </View>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={'#100F0F'}/>
+      <StatusBar barStyle="light-content" backgroundColor={'#100F0F'} />
       <SafeAreaView style={styles.contentContainer}>
         <ScrollView>
+          {console.log('==== foreCast ===', foreCastList)}
 
           {/** Header Section */}
           <View style={styles.headerContainer}>
             <Image source={iconSearch} style={styles.iconSearch} />
-            <Text style={styles.title}>Cirebon, West Java</Text>
+            {isLoading ? <PlaceholderLine Animation={Fade} width={60} style={styles.skeletonHeader} /> : <Text style={styles.title}>{foreCast?.city?.name}</Text>}
             <Image source={iconSetting} style={styles.iconSearch} />
           </View>
 
@@ -32,37 +104,63 @@ function HomeScreen() {
 
             {/** Weather Title Section */}
             <View style={styles.weatherContainer}>
-              <View style={styles.titleWeatherContainer}>
-                <Image source={iconCloud} style={styles.iconWeather} />
-                <View>
-                  <Text style={styles.titleWeather}>Overcast Cloud</Text>
-                  <Text style={styles.subtitleWeather}>Light breeze</Text>
+              {isLoading ? (
+                <View style={styles.placehoderWeather}>
+                  <Placeholder Animation={Fade} Left={PlaceholderMedia} width={'50%'}>
+                    <PlaceholderLine />
+                    <PlaceholderLine width={50} />
+                  </Placeholder>
+                  <Placeholder Animation={Fade} width={'50%'} height={100}>
+                    <PlaceholderLine height={100} style={styles.placehoderWeatherSub} />
+                  </Placeholder>
+                  <Placeholder Animation={Fade} width={'50%'} marginTop={30}>
+                    <PlaceholderLine />
+                  </Placeholder>
                 </View>
-              </View>
-              <Text style={styles.titleDegress}>26`C</Text>
-              <Text style={styles.titleFeels}>Feels like 26`C</Text>
-              <Text style={styles.titlePrecipitation}>No precipitation within an hour</Text>
+              ) : (
+                <>
+                  <View style={styles.titleWeatherContainer}>
+                    <Image source={foreCastIndex?.weather?.[0]?.main == 'Rain' ? iconRainy : foreCastIndex?.weather?.[0]?.main == 'Clouds' ? iconCloud :  iconSun} style={styles.iconWeather} />
+                    <View>
+                      <Text style={styles.titleWeather}>{foreCastIndex?.weather?.[0]?.description}</Text>
+                      <Text style={styles.subtitleWeather}>{foreCastIndex?.weather?.[0]?.main}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.titleDegress}>{temperatureConverter(foreCastIndex?.main?.temp)}</Text>
+                  <Text style={styles.titleFeels}>{`Feels like ${temperatureConverter(foreCastIndex?.main?.feels_like)}`}</Text>
+                  <Text style={styles.titlePrecipitation}>No precipitation within an hour</Text>
+                </>
+              )}
             </View>
 
             {/** Weather Subtitle Section */}
             <View style={styles.boxContainerSubtitle}>
-              <View style={styles.titleBoxContainer}>
-                <Text style={styles.titleBox}>Wind: 3.1 m/s</Text>
-                <Text style={styles.titleBox}>Humidity: 81%</Text>
-                <Text style={styles.titleBox}>UV Index: 0.3</Text>
-                <Text style={styles.titleBox}>Pressure: 1012hPa</Text>
-              </View>
-              <View style={styles.titleBoxContainerSecond}>
-                <Text style={styles.titleBox}>Visibility: 10.0km</Text>
-                <Text style={styles.titleBox}>Dew Point: 22`</Text>
-              </View>
+              {isLoading ? (
+                <>
+                  <PlaceholderLine />
+                  <PlaceholderLine />
+                </>
+              ) : (
+                <>
+                  <View style={styles.titleBoxContainer}>
+                    <Text style={styles.titleBox}>{`Wind: ${foreCastIndex?.wind?.speed} m/s`}</Text>
+                    <Text style={styles.titleBox}>{`Humidity: ${foreCastIndex?.main?.humidity}%`}</Text>
+                    <Text style={styles.titleBox}>{`Sea Lv: ${foreCastIndex?.main?.sea_level}`}</Text>
+                    <Text style={styles.titleBox}>{`Pressure: ${foreCastIndex?.main?.pressure}hPa`}</Text>
+                  </View>
+                  <View style={styles.titleBoxContainerSecond}>
+                    <Text style={styles.titleBox}>{`Visibility: ${foreCastIndex?.visibility / 1000} Km`}</Text>
+                    <Text style={styles.titleBox}>{`Temp Max: ${temperatureConverter(foreCastIndex?.main?.temp_max)}`}</Text>
+                  </View>
+                </>
+              )}
             </View>
 
             {/** Weather Clock Section */}
             <View style={styles.clockContainer}>
               <FlatList
                 horizontal
-                data={[0, 1, 2, 3, 4, 5, 6, 7, 8]}
+                data={foreCastList}
                 renderItem={renderItemClock}
                 keyExtractor={item => item.id}
                 showsHorizontalScrollIndicator={false}
@@ -72,7 +170,7 @@ function HomeScreen() {
             {/** Weather Day Section */}
             <View style={styles.dayContainer}>
               <FlatList
-                data={[0, 1, 2, 3, 4, 5, 6]}
+                data={foreCastList}
                 renderItem={renderItemDay}
                 keyExtractor={item => item.id}
                 showsHorizontalScrollIndicator={false}
@@ -84,29 +182,5 @@ function HomeScreen() {
     </View>
   )
 }
-
-/** Render Clock Weather Item */
-const renderItemClock = () => (
-  <View style={styles.clockContent}>
-    <Text style={styles.titleClock}>21:00</Text>
-    <Image source={iconCloud} style={styles.iconWeatherClock} />
-    <Text style={styles.subtitleClock}>26`</Text>
-  </View>
-);
-
-/** Render Day Weather Item */
-const renderItemDay = (item) => (
-  <View>
-    {item.index !== 0 && <View style={styles.divider} />}
-    <TouchableOpacity style={styles.buttonDay}>
-      <Text style={styles.titleDay}>Tue Dec 27</Text>
-      <View style={styles.contentButtonRight}>
-        <Text style={styles.titleDay}>28 / 25`C</Text>
-        <Image source={iconRainy} style={styles.iconDay} />
-        <Image source={iconChevron} style={styles.iconChevron} />
-      </View>
-    </TouchableOpacity>
-  </View>
-);
 
 export default HomeScreen;

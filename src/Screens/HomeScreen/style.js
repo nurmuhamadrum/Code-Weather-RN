@@ -141,5 +141,18 @@ export const styles = StyleSheet.create({
     height: 0.8,
     backgroundColor: fontColorGray,
     marginBottom: 16
+  },
+  skeletonHeader: {
+    marginTop: 6
+  },
+  placehoderWeather: {
+    display: 'flex', 
+    width: '100%', 
+    alignItems: 'center', 
+    justifyContent: 'center'
+  },
+  placehoderWeatherSub: {
+    borderRadius: 6, 
+    marginTop: 12
   }
 })
